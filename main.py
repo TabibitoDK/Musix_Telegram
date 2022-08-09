@@ -6,6 +6,7 @@ from telegram.ext import Updater
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
+from telegram import replykeyboardmarkup
 
 TOKEN = None
 SONG_LIST = []
@@ -15,7 +16,19 @@ with open("config.json") as file:
 
 # Create a function called start
 def start(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text= TOKEN.get("WelcomeText"))
+    alreadtTag = []
+    keyboardMrk = []
+    for title in SONG_LIST:
+        for tag in title.get("tags"):
+            if tag in alreadtTag:
+                continue
+            tagName = []
+            tagName.append(str(tag))
+            alreadtTag.append(tag)
+            keyboardMrk.append(tagName)
+    print(keyboardMrk)
+    replyMrk = replykeyboardmarkup.ReplyKeyboardMarkup(keyboardMrk)
+    context.bot.send_message(chat_id=update.effective_chat.id, text= TOKEN.get("WelcomeText"), reply_markup=replyMrk)
     print("id: ", update.effective_chat.id)
 
 def echo(update: Update, context: CallbackContext):
